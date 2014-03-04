@@ -1,0 +1,62 @@
+.\" Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH lfm "1" "May 21, 2011"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+\fBlfm\fR \- a powerful file manager for the UNIX console
+
+.SH SYNOPSIS
+.BI "lfm [ -h | --help ] "
+.br
+.BI "    [ -d | --debug ]"
+.br
+.BI "    [-1 | -2] [pathtodir1 [pathtodir2]]"
+.sp
+
+.SH DESCRIPTION
+.B Last File Manager
+is a powerful file manager for the UNIX console.
+It has a curses interface and it's written in Python.
+.SH OPTIONS
+.TP
+.B "\-1"
+start in 1-pane mode
+.TP
+.B "\-2"
+start in 2-panes mode (default)
+.TP
+.B "\-d, \-\-debug"
+create debug file
+.TP
+.B "\-h, \-\-help"
+show help
+.TP
+.B "pathtodir1"
+directory
+.TP
+.B "pathtodir2"
+directory to show in panel 2
+
+.SH AUTHOR
+.B lfm
+was written by Iñigo Serna  <inigoserna@gmail.com>
+.PP
+This manual page was written by Sebastien Bacher for the Debian GNU/Linux system
+(but may be used by others).
+
+.SH SEE ALSO
+The full documentation which includes the keys descriptions is in
+/usr/share/doc/lfm/README.

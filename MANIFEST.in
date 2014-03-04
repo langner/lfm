@@ -1,0 +1,4 @@
+global-exclude {arch}
+
+include setup.py lfm/*.py lfm.1 pyview.1
+include lfm/lfm lfm/pyview README README.pyview NEWS COPYING ChangeLog TODO MANIFEST.in

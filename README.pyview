@@ -1,0 +1,78 @@
+=================================
+pyview - Last File Manager Viewer
+=================================
+
+:Author: Iñigo Serna, inigoserna AT gmail DOT com
+
+:Version: 2.3, May 21th. 2011
+
+:Home page: https://inigo.katxi.org/devel/lfm/  or  http://www.terra.es/personal7/inigoserna/lfm/
+
+:License: \(C\) 2001-11, Iñigo Serna
+
+          This software has been realised under the `GPL License`__ version 3
+          or later, read the COPYING_ file that comes with this package for
+          more information.
+
+          There is NO WARRANTY.
+
+:Last update: Sat May 21 11:47:16 2011
+
+.. contents:: Table of Contents
+
+
+Introduction
+============
+**pyview** is a pager (viewer) written in Python_.
+Though it was initially written to be used with lfm_,
+it can be used standalone as well.
+
+Since version 0.9 it can read from standard input too
+(eg. `$ ps efax | pyview -s`).
+Type `pyview -h` for more help.
+
+
+Keys
+====
++ **Movement**
+    - cursor_up, k, K
+    - cursor_down, j, J
+    - previous page, backspace, Ctrl-B
+    - next page, space, Ctrl-F
+    - home, Ctrl-A: first line
+    - end, Ctrl-E: last line
+    - cursor_left
+    - cursor_right
+
++ **Actions**
+    - h, H, F1: help
+    - w, W, F2: toggle un / wrap (only in text mode)
+    - m, M, F4: toggle text / hex mode
+    - g, G, F5: goto line / byte offset
+    - /: find (new search)
+    - F6: find previous or find
+    - F7: find next or find
+    - 0..9: go to bookmark #
+    - b, B: set bookmark #
+    - Ctrl-O: open shell 'sh'. Type 'exit' to return to pyview
+    - q, Q, x, X, F3, F10, Ctrl-Q: exit
+
+
+Goto Line / Byte Offset
+=======================
+Enter the line number / byte offset you want to show.
+If number / byte is preceded by `0x` it is interpreted as hexadecimal.
+You can scroll relative lines from the current position using '+' or '-'
+character.
+
+
+Find
+====
+Type the string to search. It ignores case.
+
+
+.. _python: http://www.python.org
+.. _COPYING: COPYING
+.. _GPL: http://www.gnu.org/licenses/licenses.html#GPL
+.. _lfm: README.html
+__ GPL_

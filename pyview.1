@@ -1,0 +1,65 @@
+.\" Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH pyview "1" "May 21, 2011"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+\fBpyview\fR \- a simple pager (viewer) to be used with Last File Manager.
+
+.SH SYNOPSIS
+.BI "pyview [ -h | --help ] "
+.br
+.BI "       [ -d | --debug ]" 
+.br
+.BI "       [-m text|hex | --mode=text|hex]"
+.br
+.BI "       [+n]"
+.br
+.BI "       pathtofile"
+
+.sp
+
+.SH DESCRIPTION
+.B pyview
+is a simple pager (viewer) to be used with Last File Manager.
+
+.SH OPTIONS
+.TP
+.B "\-m, \-\-mode"
+start in text or hexadecimal mode
+.TP
+.B "\-d, \-\-debug"
+create debug file
+.TP
+.B "\-h, \-\-help"
+show help
+.TP
+.B "\+n"
+start at line (text mode) or byte (hex mode),
+if n starts with '0x' is considered hexadecimal
+.TP
+.B "pathtofile"
+file to view
+
+.SH AUTHOR
+.B pyview
+was written by Iñigo Serna  <inigoserna@gmail.com>
+.PP
+This manual page was written by Sebastien Bacher for the Debian GNU/Linux system
+(but may be used by others).
+
+.SH SEE ALSO
+The full documentation which includes the keys descriptions is in 
+/usr/share/doc/lfm/README.pyview.

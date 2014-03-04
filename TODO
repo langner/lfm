@@ -1,0 +1,119 @@
+============================================================================
+Last update:	Time-stamp: <2011-05-21 11:44:54 inigo>
+============================================================================
+
+
+General:
+========
+High Priority:
+  + enhancements:
+    - don't like much how recursive chmod/chown/chgrp currently works
+      . split in 2 different features chmod and chown/chgrp ?
+    - support for languages with wide chars
+      . look at Xin Wang's patch
+      . check the real length on screen of the utf8-encoded strings.
+        http://bugs.python.org/issue6755
+        http://stackoverflow.com/questions/2476953/python-utf-8-howto-align-printout
+  + documentation:
+    - be sure version and release date is correct in all files
+
+Medium Priority:
+  + enhancements:
+    - substitute curses.color_pair(X) for COL_XXX
+  + ui:
+    - tab views:
+      . 2 columns mode
+      . customized: permissions instead of date
+      . quick view
+      . info view
+  + new features:
+    - pyview:
+      . use mmap
+      . tail mode: option -f, document
+    - powercli: |: run as tail -f, substitute run sync by default, document
+    - diff and sync dirs: use filecmp.dircmp or rsync
+
+Low Priority (maybe some day):
+  + enhancements:
+    - more than 10 bookmarks => use letters
+    - find/grep
+      . exclude files (f.e. *.o) in findgrep
+        grep --exclude=XXX => NON-POSIX, GNU extension
+      . checkboxes for ignorecase and regex flags
+  + new features:
+    - filter files (f.e. "*py" to only view python files)
+    - crypt files => gnupg ?
+    - new vfs: .rpm, .cpio, .deb, .jar, .xpi, .egg
+    - show directory under cursor in the other panel: mc: Alt+O
+    - keybindings customization
+    - global copy/cut/paste between tabs or panes
+    - background processes: copy/move/delete
+  + other:
+    - use mimetypes module
+    - use pyinotify module
+    - plugin system
+
+Very Low Priority (never):
+  + remote vfs: ssh, ftp, smb, webdav => read FAQ entry about fuse integration
+  + advanced file rename tool => use PowerCLI
+  + i18n => curses ui programming is very hard when dealing with different languages
+            because strings have different lengths so it's imposible to design a nice
+            and working interface for every language
+  + mouse support
+  + UI to configure preferences
+  + "save delete" / delete moving to ~/.Trash
+
+
+Known Bugs:
+===========
++ general:
+  - after renaming a file, cursor should be placed over the new file name,
+    but this is not always posible because we don't know new file name
+  - if an error happens while copying/moving/uncompressing/... =>
+    => some rubbish remain in destination
+
++ compress.py:
+  - rar with password halts lfm, because process is waiting for a password =>
+    => timeout if not output and kill the spawned process
+  - recursively chmod +w temp files before deleting
+
++ vfs.py:
+  - .tar.gz inside a .tar.gz file (vfs in vfs)
+  - tmpdir are showed in the copy/move/... dialogs or when view/edit/...
+    a file, instead of vfs dir (this is just a minor estetic issue)
+  - in case of 'panelize' vfs type (after find/grep), deleted / moved
+    files are not deleted / moved in real path
+
+
+Python versions:
+================
+Upgrading python version, interesting new features by version
++ python 2.4
+  - sorted
+  - sort, sorted: cmp -> key
+  - subprocess
+  - property
+  - unicodetata.east_asian_width
++ python 2.5
+  - ternary operator
+  - any, all
+  - ctypes
++ python 2.6
+  - with
+  - multiprocessing
+  - subprocess.Popen.{send_signal,kill,terminate}
+  - format
+  - collections.namedtuple
+  - os.closerange()
+  - try: except Exception as
++ python 2.7
+  - subprocess.check_output
+  - collections.OrderedDict
++ python 3.x
+  - print()
+  - has_key => in
+  - collections.OrderedDict
+  - no module cPickle
+
+
+============================================================================

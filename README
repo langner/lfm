@@ -1,0 +1,895 @@
+=======================
+lfm - Last File Manager
+=======================
+
+:Author: Iñigo Serna, inigoserna AT gmail DOT com
+
+:Version: 2.3, May 21st. 2011
+
+:Home page: https://inigo.katxi.org/devel/lfm/  or  http://www.terra.es/personal7/inigoserna/lfm/
+
+:License: \(C\) 2001-11, Iñigo Serna
+
+          This software has been realised under the `GPL License`__ version 3
+          or later, read the COPYING_ file that comes with this package for
+          more information.
+
+          There is NO WARRANTY.
+
+:Last update: Sat May 21 11:46:07 2011
+
+.. contents:: Table of Contents
+
+
+Introduction
+============
+**Last File Manager** is a powerful file manager for the UNIX console.
+It has a curses interface and it's written in Python.
+
+
+Some of the features you can find in *lfm*:
+
+- console-based file manager for UNIX platforms
+- 1-pane or 2-pane view
+- tabs
+- bookmarks
+- history
+- vfs for compressed files
+- dialogs with entry completion
+- PowerCLI, a command line interface with advanced features
+- fast access to the shell
+- direct integration of find/grep, df and other tools
+- color files by extension [Andrey Skvortsov]
+- support for different file names encodings
+- fast file viewer with text and binary modes
+- ...and many others
+
+
+From version 0.6 and up *lfm* package also contains **pyview**, a
+text / hex file viewer to be used with or without *lfm*.
+Read README.pyview_ for more info about it.
+
+Some screenshots:
+
+
+  **lfm**:
+
+  .. image:: lfm.png
+
+
+  **pyview**:
+
+  .. image:: pyview.png
+
+
+
+Type `lfm --help` or `pyview --help` for a complete list of options.
+
+When *lfm* starts the first time, it tries to discover the location of
+some apps in your system to configure itself automatically, but it's not
+perfect, so you should take a look to the configuration (`General Menu [F9]
+-> Edit Configuration [c]`) and change it according to your preferences.
+
+Consult `.lfmrc configuration file`_ section for in-depth knowledgement
+about all the settings and their meaning.
+
+Finally, take a look at TODO_ file to check known bugs and
+*not-implemented-yet* (tm) features.
+
+
+Requirements
+============
+*Lfm* and *Pyview* are written in Python_ and require curses module.
+It should run on Python v2.5 or higher, but as I'm only have v2.7 on my
+computers I haven't tested older versions.
+
+All modern UNIX flavours (Linux, \*BSD, Solaris, etc) should run it without
+problems. If they appear please notify me.
+
+Since version 0.90, *lfm* needs ncurses >= v5.x to handle terminal resizing.
+
+Python v2.5+ and ncurses v5.4+ to use wide characters.
+
+Note that python curses module should be linked against ncursesw library
+(instead of ncurses) to get wide characters support. This is the usual case
+in later versions of Linux distributions, but maybe not the case in older
+Linux or other UNIX platforms. Thus, expect problems when using multibyte
+file names (f.e. UTF-8 or latin-1 encoded) if your curses module isn't
+compiled against ncursesw. Anyway, I hope this issue will disappear with new
+releases of those platforms eventually.
+
+Consult `Files name encoding`_ section below for more information
+about support of different encodings.
+
+
+Development, Download, Installation
+===================================
+.. sidebar:: **Files:** all releases
+   :class: warning
+
+   +---------+------------------+------------+
+   | Version |       File       |    Date    |
+   +=========+==================+============+
+   |   2.3   | lfm-2.3.tar.gz_  | 2011/05/21 |
+   +---------+------------------+------------+
+   |   2.2   | lfm-2.2.tar.gz_  | 2010/05/22 |
+   +---------+------------------+------------+
+   |   2.1   | lfm-2.1.tar.gz_  | 2008/12/21 |
+   +---------+------------------+------------+
+   |   2.0   | lfm-2.0.tar.gz_  | 2007/09/03 |
+   +---------+------------------+------------+
+   |   1.0   |  Never released  |   ~2006    |
+   +---------+------------------+------------+
+   |   0.92  |  Never released  |   ~2005    |
+   +---------+------------------+------------+
+   |   0.91  | lfm-0.91.tar.gz_ | 2004/07/03 |
+   +---------+------------------+------------+
+   |   0.90  |  Never released  |            |
+   +---------+------------------+------------+
+   |   0.9   | lfm-0.9.tar.gz_  | 2002/09/05 |
+   +---------+------------------+------------+
+   |   0.8   | lfm-0.8.tar.gz_  | 2002/03/04 |
+   +---------+------------------+------------+
+   |   0.7   | lfm-0.7.tar.gz_  | 2001/11/30 |
+   +---------+------------------+------------+
+   |   0.6   |  Never released  |            |
+   +---------+------------------+------------+
+   |   0.5   | lfm-0.5.tar.gz_  | 2001/08/07 |
+   +---------+------------------+------------+
+   |   0.4   | lfm-0.4.tar.gz_  | 2001/07/19 |
+   +---------+------------------+------------+
+
+   Read about NEWS_ or ChangeLog_
+
+
+**Last File Manager** development can be followed in the `BitBucket mercurial repository`__.
+
+'lfm' is very easy to install, just keep next steps:
+
+1. Download sources_
+2. Uncompress file
+3. Build:
+    `$ python setup.py build`
+4. Install, as root:
+    `# python setup.py install`
+5. Run it:
+    `$ lfm`
+6. Edit settings:
+     `General Menu [F9] -> Edit Configuration [c]`
+
+
+To let 'lfm' to change to panel's current directory after quiting with
+`q`, `Q` or `F10` keys, you must add next code to `/etc/bashrc` or to
+your `~/.bashrc`::
+
+    lfm()
+    {
+	/usr/bin/lfm "$@"		# type here full path to lfm script
+	LFMPATHFILE=/tmp/lfm-$$.path
+	cd "`cat $LFMPATHFILE`"
+	rm -f $LFMPATHFILE
+    }
+
+If you don't use bash or csh shell, above lines could differ.
+
+Upgrading
+---------
+If you upgrade from versions < 2.0, please remove first `~/.lfmrc` to
+regenerate a valid configuration as file format has changed. I advise you
+to make a backup copy before.
+
+Also, note that some keys have changed since previous versions.
+Read carefully following section.
+
+
+Key bindings
+============
+In this section you can find the complete list of key bindings.
+
+Global
+------
++ **Movement**
+    - cursor_up, k
+    - cursor_down, j
+    - previous_page, backspace, Ctrl-B
+    - next_page, space, Ctrl-F
+    - home, Ctrl-A: first file
+    - end, Ctrl-E: last file
+    - cursor_left: upper dir
+    - cursor_right: enter dir / vfs
+    - Ctrl-S: go to file in current panel
+    - Ctrl-L: center cursor in current panel
+    - Ctrl-P, Ctrl-up: move cursor 1/4th of page upwards
+    - Ctrl-N, Ctrl-down: move cursor 1/4th of page downwards
+
++ **Movement in non active pane** [#]_
+    - Alt/Shift-cursor_up, K
+    - Alt/Shift-cursor_down, J
+    - Alt/Shift-previous_page, B
+    - Alt/Shift-next_page, F
+    - Alt/Shift-home, A: first file
+    - Alt/Shift-end, E: last file
+    - Alt/Shift-cursor_left: upper dir
+    - Alt/Shift-cursor_right: enter dir / vfs
+    - P: move cursor 1/4th of page upwards
+    - N: move cursor 1/4th of page downwards
+
+.. [#] Some key shorcuts combinations such as Alt or Shift + key may not work, as it
+       depends on the capabilities of the terminal program you are using.
+       F.e. it doesn't work in my computer console running Fedora 13 Linux, but it works
+       under gnome-terminal in X. Your results could be different.
+       Anyway, there are alternative shortcuts (K J B F A E), but not for everything.
+       Consult your terminal emulation program documentation to check it.
+       Also note that you can allow/disallow this navigation with Ctrl-W, being disabled
+       by default.
+
++ **Changing directory**
+    - g, G: go to directory
+    - 0..9: go to bookmark #
+    - Ctrl-D, Ctrl-\\: select bookmark # from menu
+    - b: set bookmark #
+    - Ctrl-Y: display directories history
+
++ **Panes**
+    - tab: other pane
+    - .: toggle display 1 or 2 panes
+    - , Ctrl-U: change panes position (left->right, right->left)
+    - =: show same directory in both panes
+
++ **Tabs**
+    - :: new tab
+    - !: close tab
+    - <: go to left tab
+    - >: go to right tab
+
++ **Selections**
+    - insert: select item and go to next file
+    - +: select group
+    - -: deselect group
+    - \*: invert selection
+
++ **Files / Directories operations**
+    - t, T: touch file
+    - l: create link
+    - L: edit link
+    - F2: rename file/dir/selection
+    - F3: view file
+    - F4: edit file
+    - F5: copy file/dir/selection
+    - F6: move file/dir/selection
+    - F7: make directory
+    - F8, del: delete file/dir/selection
+    - enter: execute file, enter dir / vfs or view 'specially' depending on the extension of the regular file. It is executed in a thread that can be stopped and captures output
+    - i, I: show file info
+
++ **Other**
+    - #: show selected/all directories size
+    - s, S: sort files
+    - /: find/grep files
+    - @: do something on file. Output is not captured
+    - Ctrl-H: toggle show/hide dot files
+    - Ctrl-W: toggle allow navigate in non-active pane
+    - Ctrl-O: open shell. Type 'exit' or press Ctrl-D to return to lfm
+    - Ctrl-X: toggle show/hide PowerCLI
+    - Ctrl-T: tree
+    - F12: file menu
+        - @: do something on file(s)
+        - i: file(s) info
+        - p: change file permissions, owner, group
+        - a: backup file. You can specify the extension to use in settings
+        - d: diff file with backup. Can be unified, context or ndiff, configured in settings
+        - z: Compress/uncompress file(s)...
+           - g: gzip/gunzip
+           - b: bzip2/bunzip2
+           - x: xz/unxz
+        - x: uncompress .tar.gz, .tar.bz2, .tar.xz, .tar, .zip, .rar, .7z
+        - u: uncompress .tar.gz, etc in other panel
+        - c: compress directory to format...
+           - g: .tar.gz
+           - b: .tar.bz2
+           - x: .tar.xz
+           - t: .tar
+           - z: .zip
+           - r: .rar
+           - 7: .7z
+    - F9: general menu
+        - /: find/grep file
+        - #: show directories size
+        - s: sort files
+        - t: tree
+        - f: show filesystems info
+        - o: open shell
+        - c: edit configuration
+        - r: regenerate programs
+        - h: delete history
+    - Ctrl-R: refresh screen
+    - h, H, F1: help
+    - q, Q, F10: exit changing to current path
+    - Ctrl-Q: quit
+
+Dialogs
+-------
++ ***EntryLine* window**
+    - enter: return path or execute command in *PowerCLI*
+    - Ctrl-C, ESC: quit
+    - Ctrl-X: toggle show/hide in *PowerCLI*
+    - insert, ...
+    - special:
+        - up, down: history
+        - tab: change to next entry or button or complete in *PowerCLI*
+        - Ctrl-T: complete
+    - movement
+        - home, Ctrl-A: move start of line
+        - end, Ctrl-E: move end of line
+        - left, Ctrl-B: move cursor left
+        - right, Ctrl-F: move cursor right
+        - Ctrl-P, Ctrl-left: move cursor previous special character
+        - Ctrl-N, Ctrl-right: move cursor next special character
+    - deletion
+        - backspace, del
+        - Ctrl-W: delete whole line
+        - Ctrl-H: delete from start to position
+        - Ctrl-K: delete from position to end of line
+        - Ctrl-Q, Ctrl-Backspace: delete until previous special character
+        - Ctrl-R, Ctrl-Del: delete until next special character
+    - insertion
+        - Ctrl-Z: restore original content (undo)
+        - Ctrl-V: insert filename at position
+        - Ctrl-S: insert path at position
+        - Ctrl-O: insert other pane path at position
+        - Ctrl-D, Ctrl-\: select bookmark at position
+        - Ctrl-Y: select previous path at position
+        - Ctrl-G: select historic (not PowerCLI)
+        - Ctrl-G: select PowerCLI stored (from config) or history command (PowerCLI)
+
++ ***SelectItem* window**
+    - up, k, K
+    - down, j, J
+    - previous page, backspace, Ctrl-B
+    - next page, space, Ctrl-F
+    - home, Ctrl-A
+    - end, Ctrl-E
+    - Ctrl-L: go to entry in the middle
+    - 0..9: go to entry number # (0->10)
+    - Ctrl-S: go to entry starting by...
+    - enter: return entry
+    - Ctrl-C, q, Q, ESC: quit
+
++ ***Permissions* window**
+    - tab, cursor: move
+    - in permissions: r, w, x, s, t to toggle read, write, exec, setuid or setgid, sticky bit
+    - in user, group: space or enter to select
+    - in recursive: space or enter to toggle
+    - in buttons: space or enter to accept that action
+    - everywhere: space or enter to accept, a to accept all, i to ignore and c, q, esc, Ctrl-c to cancel
+
++ ***Tree* panel**
+    - down, j, K: down within current depth, without going out from directory
+    - up, k, K: up within current depth, without going out from directory
+    - previous page, backspace, Ctrl-B: same as up but page-size scroll
+    - next page, space, Ctrl-F: same as down but page-size scroll
+    - home, Ctrl-A: first directory
+    - end, Ctrl-E: last directory
+    - left: go out from directory
+    - right: enter in directory
+    - enter: return changing to directory
+    - Ctrl-H: toggle show/hide dot files
+    - Ctrl-C, q, Q, F10, ESC: quit
+
+
+Files name encoding
+===================
+Since v2.0, *lfm* uses the encoding defined in the locale of your system
+if found, this will be UTF-8 likely.
+
+Since v2.2, *lfm* was rewritten to always use unicode strings internally,
+but employ terminal encoding (f.e. UTF-8) to interact with the user in
+input forms, to display contents, and to pass commands to run in shell.
+
+When *lfm* detects a file with invalid encoding name it asks the user to
+convert it (can be automatic with the proper option in the configuration).
+If not converted, *lfm* will display the file but won't operate on it.
+
+Please note there are some restrictions to support wide characters by now,
+as explained in the `Requirements`_ section.
+
+
+Virtual File Systems (VFS)
+==========================
+You can navigate inside some special files (known as vfs files in *lfm*)
+just *entering into* them (press *enter* or *cursor_right* when the
+cursor bar is over one of these files). By now, supported types are
+`.tar.gz`, `.tar.bz2`, `.tar.xz`, `.zip`, `.rar`, and `.7z` files.
+
+The virtual directory name ('path_to_vfs_file#vfs/dir') is not propagated, so
+tmpdir (`/tmp/@6421.2/dir`) is showed in the copy/move/... dialogs or when
+view/edit/... a file, but this is just an estetic issue.
+
+When returning from one of such vfs files, a question dialog appears asking to
+allow you to regenerate the vfs file and update all changes (i.e., it is
+compressed again, so it could be slow in some machines), but `lfm` checks if it
+can do first, to avoid waste of time. This behaviour (rebuild or not rebuild, ask
+it or not) can be modified in the configuration file. By default the question is
+showed but it's set to *not regenerate vfs*.
+In case of `panelize` vfs type (after find/grep), deleted / moved files
+are not deleted / moved in real path.
+
+*lfm* doesn't implement remote vfs such as ssh, ftp, smb, webdav, ...
+This is a design criterion, we don't want to add external dependencies
+beyond python standard library. If you need to access remote file
+systems you could mount them using something like *fuse* and treat them
+as local directories from inside *lfm*. Look at the FAQ section to learn how.
+
+
+PowerCLI
+========
+*PowerCLI* is a command line interface with advanced features.
+To show it press Ctrl-X, and same again to hide, ENTER to run.
+Line contents are restored next time PowerCLI is showed.
+
+Some features:
+
+- uses *EntryLine*, so same key bindings are available.
+  You can press Ctrl-V to paste file name for instance
+- completion (Ctrl-T or TAB key), both for system programs or path files
+  and directories
+- loops to run the same command for all the selected files
+- variable substitution
+- can execute python code
+- persistent history between sessions
+- faster than opening a shell (Ctrl-O)
+
+*lfm* waits until the command is finished, showing output or error.
+You can stop the command if it seems to run forever.
+
+To run a command in background just add a "&" at the end of the command.
+This is useful to open a graphical program and come back to *lfm* quickly.
+But note you won't get any feedback about the command, even if it has been
+able to run or not.
+
+If the program you want to run needs the terminal (pyview, less, vim...),
+add "%" at the end of the command to let *lfm* know it must temporary free
+the terminal. Not passing it will fill your screen with garbage.
+
+Variables substitution
+----------------------
+They are a lot of variables you can use to simplify your command typing.
+Specially useful in loops to apply the same command to many files.
+
+- *$f*: file including extension
+- *$v*: same
+- *$E*: file without extension
+- *$e*: extension
+- *$F*: path/file.ext
+- *$d*: directory
+- *$o*: other panel directory
+- *$b#*: path in bookmark #
+- *$s*: all selected files, space-separated and enclosed between "
+- *$a*: all files, space-separated and enclosed between "
+- *$i*: loop index, starting at 1
+- *$tm*: file modification time
+- *$ta*: file access time
+- *$tc*: file creation time
+- *$tn*: now
+
+Python execution
+----------------
+You can run a subset of python language code in a sandbox, but note
+this sandbox doesn't allow to import modules or access anything outside
+for security reasons. But DON'T TRUST IT'S SECURE.
+
+The sandbox is a very limited environment but powerful enough to satisfy
+common needs, even you can use the variables inside the code.
+
+Code must be enclosed between { }. Even you can use different code chunks
+in the same command. Consult the examples.
+
+Examples
+--------
+* copy current file (or all selected files in a loop) to the other pane path::
+
+    cp $f $o
+
+* move selected files to path stored in bookmark #3 (no loop)::
+
+    mv $s "$b3"
+
+  We have enclosed $b3 between " here in case the path could contain spaces.
+
+* show all python files in a directory::
+
+    find /to/path -name "*.py"
+
+* open current file with gthumb in background and continue inmediately in *lfm*::
+
+    gthumb [Ctrl-v] &
+
+* find python files containing some special words in the background
+  and redirect output to a file::
+
+    find . -name "*py" -print0 | xargs --null grep -EHcni "TODO|WARNING|FIXME|BUG" > output.txt &
+
+  Note that if you run a command in the background you won't get any feedback
+  by default, that's why we redirect the output to a file.
+
+* edit current file with vim in the console::
+
+    vim %F %
+
+  Note you must end the line with a % if the command will use the terminal.
+
+* convert file (or all selected) to lowercase and change .bak extension to .orig.
+  F.e., "FiLeFOO.bak" => "filefoo.orig"::
+
+    mv $f {$f.lower().replace('.bak', '.orig')}
+
+* loop over selected files, copy to the other pane path and rename.
+  F.e., if "/current/path/img1234.jpeg" is the 13th file in the
+  selection and was created on 2010/07/22 at 19:43:22
+  => "/other/path/13. 20100722194322 - IMG1234.jpg"::
+
+    cp $f "$o/{'%2.2d. %s - %s' % ($i, $tm.strftime('%Y%m%d%H%S'), $E.upper())}.jpg"
+
+  Yes, a stupid convoluted example, but it clearly shows how powerful *PowerCLI* is.
+  Also observe that as the target file name contain spaces, the whole destination
+  must be surrounded with ".
+
+Random notes
+------------
+* Paths or filenames with spaces or special characters must be enclosed between ".
+  Study last example above
+
+* Loops are only executed with selected files AND at least one of next variables
+  present within the command: $f, $v, $F, $E, $i, $tm, $ta, $tc.
+  Remember $a or $s never loop
+
+* Note the differences of running commands with trailing "&" vs. "%" vs. nothing
+
+* If cursor is at the beginning of line, completion will try system programs.
+  If it is in any other position, it will try files or directories first and
+  if nothing is found then programs
+
+* Although python code is executed inside a sandbox, it's not completely secure.
+  Anyway, it's the same kind of security issues your system is exposed to when
+  shell access is allowed
+
+
+.lfmrc configuration file
+=========================
+Program preferences are saved in `~/.lfmrc` file.
+
+To configure *lfm* `General Menu [F9] -> Edit Configuration [c]`.
+To restore default configuration exit from all instances of *lfm* and
+delete  `~/.lfmrc` file.
+
+In next subsections we will discuss the default configuration.
+
+Header
+------
+Always the same text. It is used to validate the configuration file::
+
+    ########## lfm - Last File Manager Configuration File ##########
+
+[Programs]
+----------
+Default programs *lfm* use for common file types::
+
+    audio: mplayer
+    ebook: FBReader
+    editor: vi
+    graphics: gthumb
+    pager: pyview
+    pdf: evince
+    shell: bash
+    video: mplayer
+    web: firefox
+
+[File Types]
+------------
+File extensions associated with default programs. See previous subsection::
+
+    audio: ogg, flac, mp3, wav, au, midi
+    ebook: epub, chm, mobi, prc, azw, lit, fb2
+    graphics: png, jpeg, jpg, gif, tiff, tif, xpm, svg
+    pdf: pdf, ps
+    video: mpeg, mpg, avi, asf, ogv, flv, mkv
+    web: html, htm
+
+[Bookmarks]
+-----------
+User-defined 10 bookmarks. / by default::
+
+    0: /
+    1: /
+    2: /
+    3: /
+    4: /
+    5: /
+    6: /
+    7: /
+    8: /
+    9: /
+
+[PowerCLI commands]
+-------------------
+User-defined 10 favourites PowerCLI stored commands::
+
+    0: mv "$f" "{$f.replace('', '')}"
+    1: pyview "$f" %
+    2: find "$d" -name "*" -print0 | xargs --null grep -EHcni "TODO|WARNING|FIXME|BUG"
+    3: find "$d" -name "*" -print0 | xargs --null grep -EHcni "TODO|WARNING|FIXME|BUG" >output.txt &
+    4: cp $s "$o"
+    5:
+    6:
+    7:
+    8:
+    9:
+
+[Colors]
+--------
+User interface colors. Each entry represents a different entity.
+Allowed colors are: black, blue, cyan, green, magenta, red, white and yellow::
+
+    archive_files: yellow black
+    buttons: yellow red
+    cli_prompt: blue black
+    cli_text: white black
+    current_file: blue cyan
+    current_file_otherpane: black white
+    current_selected_file: yellow cyan
+    current_selected_file_otherpane: yellow white
+    data_files: magenta black
+    directories: green black
+    document_files: blue black
+    error_messages1: white red
+    error_messages2: black red
+    exe_files: red black
+    file_info: red black
+    files: white black
+    graphics_files: magenta black
+    help: green black
+    media_files: blue black
+    messages: magenta cyan
+    selected_file: yellow black
+    source_files: cyan black
+    tabs: white blue
+    temp_files: white black
+    title: yellow blue
+
+[Options]
+---------
+Main settings::
+
+    # automatic_file_encoding_conversion: never = -1, ask = 0, always = 1
+    # sort:	None = 0, byName = 1, byName_rev = 2, bySize = 3,
+    # 	bySize_rev = 4, byDate = 5, byDate_rev = 6
+    automatic_file_encoding_conversion: 0
+    color_files: 1
+    detach_terminal_at_exec: 1
+    grep_ignorecase: 1
+    grep_regex: 1
+    manage_otherpane: 0
+    num_panes: 2
+    rebuild_vfs: 0
+    save_conf_at_exit: 1
+    save_history_at_exit: 1
+    show_dotfiles: 1
+    show_output_after_exec: 1
+    sort: 1
+    sort_mix_cases: 1
+    sort_mix_dirs: 0
+
+* *automatic_file_encoding_conversion*: Automatically convert filenames when wrong encoding found? Default 1 (yes)
+* *color_files*: Colorize files by extension? Default 1 (yes)
+* *detach_terminal_at_exec*: Detach terminal at execute? Default 1 (yes)
+* *grep_ignorecase*: Ignore case in grep? Default 1 (yes)
+* *grep_regex*: Use regex as grep pattern? Default 1 (yes)
+* *manage_otherpane*: Allow cursor navigation for the non-active panel? Default 0 (no), but can be enabled with Ctrl-W
+* *num_panes*: Number of panels to show? Default 2
+* *rebuild_vfs*: Rebuild vfs? Useful if automatic in confirmations->ask_rebuild_vfs. Default 0 (no)
+* *save_conf_at_exit*: Save configuration at exit? Default 1 (yes)
+* *save_history_at_exit*: Save history at exit for future sessions? Default 1 (yes)
+* *show_dotfiles*: Show .files? Default 1 (yes)
+* *show_output_after_exec*: Show output after exec? Default 1 (yes)
+* *sort*: Sort type. Default 1 (sort by name)
+* *sort_mix_cases*: Mix upper and lower case files in sort? Default 1 (yes)
+* *sort_mix_dirs*: Mix files and directories in sort? Default 0 (no)
+
+[Misc]
+------
+Settings which require a string value::
+
+    # diff_type: context, unified, ndiff
+    backup_extension: .bak
+    diff_type: unified
+
+* *backup_extension*: Backup file extensions? Default .bak
+* *diff_type*: Diff output format? Default unified
+
+[Confirmations]
+---------------
+These settings indicate whether the user will be prompted in these actions::
+
+    ask_rebuild_vfs: 1
+    delete: 1
+    overwrite: 1
+    quit: 1
+
+*ask_rebuild_vfs*: when abandoning compressed files, prompt if we should
+rebuild the file in case we've modified contents.
+
+[Files]
+-------
+File extensions for different file types. Used to color them::
+
+    archive_files: .gz, .bz2, .xz, .tar, .tgz, .Z, .zip, .rar, .7z, .arj, .cab, .lzh, .lha, .zoo, .arc, .ark, .rpm, .deb
+    data_files: .dta, .nc, .dbf, .mdn, .db, .mdb, .dat, .fox, .dbx, .mdx, .sql, .mssql, .msql, .ssql, .pgsql, .cdx, .dbi, .sqlite
+    document_files: .txt, .text, .rtf, .odt, .odc, .odp, .abw, .gnumeric, .sxw, .sxc, .sxp, .sdw, .sdc, .sdp, .ps, .pdf, .djvu, .dvi, .bib, .tex, .epub, .chm, .prc, .mobi, .azw, .lit, .imp, .xml, .xsd, .xslt, .sgml, .dtd, .html, .shtml, .htm, .css, .mail, .msg, .letter, .ics, .vcs, .vcard, .lsm, .po, .man, .1, .info, .doc, .xls, .ppt, .pps
+    graphics_files: .jpg, .jpeg, .gif, .png, .tif, .tiff, .pcx, .bmp, .xpm, .xbm, .eps, .pic, .rle, .ico, .wmf, .omf, .ai, .cdr, .xcf, .dwb, .dwg, .dxf, .svg, .dia
+    media_files: .mp2, .mp3, .mpg, .ogg, .flac, .mpeg, .wav, .avi, .asf, .mov, .mol, .mpl, .xm, .med, .mid, .midi, .umx, .wma, .acc, .wmv, .swf, .flv, .ogv
+    source_files: .c, .h, .cc, .hh, .cpp, .hpp, .py, .pl, .pm, .inc, .rb., .asm, .pas, .f, .f90, .pov, .m, .pas, .cgi, .php, .phps, .tcl, .tk, .js, .java, .jav, .jasm, .diff, .patch, .sh, .bash, .awk, .m4, .el, .st, .mak, .sl, .ada, .caml, .ml, .mli, .mly, .mll, .mlp, .prg
+    temp_files: .tmp, .$$$, ~, .bak
+
+
+FAQ
+===
++ **How and why lfm born?**
+
+  Everything is explained in next sections. `list.com` and `midnight commander`
+  were the muses who guided.
+
++ **Isn't python slow? why develop lfm on python?**
+
+  No. It's fast enough. And programming in python is funny.
+
++ **I've been reading the sources and you don't use newer python features like ternary operator, with statement, and many others**
+
+  We want to mantain compatibility with python v2.4 by now. Btw, you
+  can find some of these interesting new features in the TODO_ file.
+
++ **Does it work with Python v3.x?**
+
+  No. We'll support Python v3.x when it is mainline (read, when my linux
+  distribution of choice package it as default).
+
++ **lfm does not change to current directory after quiting**
+
+  This can't be made inside the program, but you could get it using
+  the shell tip mentioned in `Development, Download, Installation`_ section.
+
++ **Why doesn't lfm implement remote vfs such as ssh, ftp, smb, webdav, ...?**
+
+  One of the design goals for *lfm* is simplicity, we don't want to add
+  external dependencies beyond python standard library. Nevertheless
+  you can use something like *fuse* to mount those remote volumes anyway.
+
+  To use fuse with ssh you need *fuse* and *sshfs* packages installed
+  on your system::
+
+    $ mkdir mount_point_for_ssh_server
+    $ sshfs user@ip_or_hostname:/path mount_point_for_ssh_server
+
+  For ftp you need *fuse* and *curlftpfs*::
+
+    $ mkdir mount_point_for_ftp_server
+    $ curlftpfs ftp://user:password@ip_or_hostname mount_point_for_ftp_server
+
+  For webdav you need *fuse* and *wdfs* or davfs2 (non fuse based)::
+
+    $ mkdir mount_point_for_webdav_server
+    $ wdfs https://user:password@server.org/webdav_dir mount_point_for_webdav_server
+
+  For smb take a look at *fuse-smb*.
+
+  And to umount::
+
+    $ fusermount -u mount_point
+    $ rm -rf mount_point
+
++ **Request: add advanced file rename tool**
+
+  Use *PowerCLI*, it's much... uhmmm... powerful!
+
++ **Keybindings customization?**
+
+  Not for the near future. Anyway, you can modify `actions.py` in the
+  sources if it's so important for you.
+
++ **Mouse support? UI to configure settings?**
+
+  I'm afraid we speak different languages.
+
++ **When will be support for internationalization?**
+
+  If we are talking about translating *lfm*, the answer is mostly
+  never. Ncurses programming makes very difficult to control the
+  length of every text for every possible language translation.
+
+  If you mean support for file names in foreign languages and
+  encodings then it's almost here already.
+
++ **Some Chinese, Japanese or Korean files make lfm crash**
+
+  Known issue. The characters of these languages span over 2 cells, so
+  it's not possible for *lfm* to guess the real width they need.
+  We expect to solve this in a near future as we are studying
+  different methods.
+
++ **[Any other question / feature request]**
+
+  Consult if it's mentioned in the TODO_ file and/or send me an email.
+
+
+History
+=======
+Many many years ago I began to write a program like this in C, but after
+some weeks of coding I never finished it... I'm too lazy, yes.
+Then I saw the light and I started writing `lfm` to learn python_.
+
+Code evolved and application got more and more features, used by many
+people around the world on different UNIX systems.
+
+But after the release of version 0.91 (June 2004) they were not more releases.
+Not that I had stopped working on *lfm*, new code was written, tested,
+rewritten again... silently... but different reasons made me to postpone public
+releases... code refactoring, a new essential feature, source cleaning,
+a wedding, a child, ahem... more code refactoring....
+
+Anyway, from now on I'll do my best to release often.
+
+
+Thanks
+======
+Thanks are obviously due to the whole python community, specially to GvR
+(of course! ;-) and all the people who answered my questions in c.l.p.
+
+It's a great pleasure to code in a language like this.
+
+Alexei Gilchrist, for his cfm program from which I took some ideas.
+
+`Midnight Commander`__ developers, whose program was the guide.
+
+`Vernon D. Buerg's list.com`__, the best program ever coded (well, just after emacs ;-).
+
+And also to all the people who have contributed with ideas, reporting
+bugs and code over these years: Antoni Aloy, Sebastien Bacher, Grigory
+Bakunov, Luigi M. Bianchi, Hunter Blanks, Witold Bołt, Fabian Braennstroem,
+Jason Buberel, Ondrej Certik, Kevin Coyner, Tim Daneliuk, Mike Dean,
+Arnå DG, Christian Eichert, Steve Emms, Murat Erten, Daniel Echeverry,
+Luca Falavigna, Stephen R. Figgins, f1ufx, Francisco Gama, Vlad Glagolev,
+Ana Beatriz Guerrero Lopez, Kelly Hopkins, Tjabo Kloppenburg, Zoran Kolic,
+Max Kutny, Martin Lüethi, James Mills, Bartosz Oler, Piotr Ozarowski,
+Mikhail A. Pokidko, Jerome Prudent, Mikhail Ramendik, Rod, Daniel T. Schmitt,
+Chengqi Song, Robin Siebler, Andrey Skvortsov, Espartaco Smith,
+Jörg Sonnenberger, Martin Steigerwald, Joshua Tasker, Tim Terlegård,
+Edd Thompson, Walter van den Broek, Jesper Vestergaard, Xin Wang,
+Alejandro Weil, Yellowprotoss, Hai Zaar and many others...
+
+You have made posible to run *lfm* in all those platforms!
+
+
+.. _sources: lfm-2.3.tar.gz
+.. _README.pyview: README.pyview.html
+.. _TODO: TODO
+.. _NEWS: NEWS
+.. _ChangeLog: ChangeLog
+.. _COPYING: COPYING
+.. _GPL: http://www.gnu.org/licenses/licenses.html#GPL
+.. _mc: http://www.ibiblio.org/mc/
+.. _buerg: http://www.buerg.com/
+.. _python: http://www.python.org
+.. _BITBUCKETREPO: https://bitbucket.org/inigoserna/lfm
+__ GPL_
+__ BITBUCKETREPO_
+__ mc_
+__ buerg_
+.. _lfm-2.3.tar.gz: lfm-2.3.tar.gz
+.. _lfm-2.2.tar.gz: lfm-2.2.tar.gz
+.. _lfm-2.1.tar.gz: lfm-2.1.tar.gz
+.. _lfm-2.0.tar.gz: lfm-2.0.tar.gz
+.. _lfm-0.91.tar.gz: lfm-0.91.tar.gz
+.. _lfm-0.9.tar.gz: lfm-0.9.tar.gz
+.. _lfm-0.8.tar.gz: lfm-0.8.tar.gz
+.. _lfm-0.7.tar.gz: lfm-0.7.tar.gz
+.. _lfm-0.5.tar.gz: lfm-0.5.tar.gz
+.. _lfm-0.4.tar.gz: lfm-0.4.tar.gz
